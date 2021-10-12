@@ -8,7 +8,7 @@ import { Icon } from 'react-native-elements';
 import { AuthContext } from "./context";
 import { SignIn } from "./SignIn";
 import { CreateAccount } from "./CreateAccount";
-import { Search } from "./Search";
+import { List } from "./List";
 import { Home } from "./Home";
 import { Details } from "./Details";
 import { Search2 } from "./Search2";
@@ -60,13 +60,13 @@ const HomeStackScreen = ({ navigation }) => (
 	</HomeStack.Navigator>
 );
 
-// Stack Navigation from Search screen
-const SearchStack = createStackNavigator();
-const SearchStackScreen = ({ navigation }) => (
-	<SearchStack.Navigator>
-		<SearchStack.Screen
-			name="Search"
-			component={Search}
+// Stack Navigation from List screen
+const ToDoList = createStackNavigator();
+const ToDoListScreen = ({ navigation }) => (
+	<ToDoList.Navigator>
+		<ToDoList.Screen
+			name="To Do List"
+			component={List}
 			options={{ headerLeft: () => (
 				<Icon
 					name="menu"
@@ -77,8 +77,8 @@ const SearchStackScreen = ({ navigation }) => (
 				/>
             ) }}
 		/>
-		<SearchStack.Screen name="Search2" component={Search2} />
-	</SearchStack.Navigator>
+		<ToDoList.Screen name="Search2" component={Search2} />
+	</ToDoList.Navigator>
 );
 
 // Stack Navigation from Profile screen
@@ -110,8 +110,8 @@ const TabsScreen = () => (
 			let iconName;
 			if (route.name === 'Home') {
 				iconName = focused ? 'home' : 'home';
-			} else if (route.name === 'Search') {
-				iconName = focused ? 'search' : 'search';
+			} else if (route.name === 'List') {
+				iconName = focused ? 'list-ul' : 'list-ul';
 			}
 			return <Icon name={iconName} size={size} color={color} type='font-awesome' />;
 		}
@@ -122,7 +122,7 @@ const TabsScreen = () => (
 	}}
 	>
 		<Tabs.Screen name="Home" component={HomeStackScreen} />
-		<Tabs.Screen name="Search" component={SearchStackScreen} />
+		<Tabs.Screen name="List" component={ToDoListScreen} />
 	</Tabs.Navigator>
 );
 

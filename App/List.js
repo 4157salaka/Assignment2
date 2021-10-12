@@ -7,7 +7,7 @@ const ScreenContainer = ({ children }) => (
     <View style={styles.container}>{children}</View>
 );
   
-export const Search = ({ navigation }) => {
+export const List = ({ navigation }) => {
     const [isLoading, setIsLoading] = React.useState(true);
 
 	React.useEffect(() => {
@@ -22,7 +22,7 @@ export const Search = ({ navigation }) => {
 
     return(
         <ScreenContainer>
-            <Text>Search Screen</Text>
+            <Text>List Screen</Text>
             <Button title="Search 2" onPress={() => navigation.push("Search2")} />
             <Button
                 title="React Native School"
