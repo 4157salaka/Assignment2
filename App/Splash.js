@@ -7,7 +7,7 @@ const ScreenContainer = ({ children }) => (
 
 export const Splash = () => (
 	<ScreenContainer>
-		<Text style={styles.loadingText} >AppName</Text>
+		<Text style={styles.loadingText} >ToDoNotes</Text>
 		<Image style={styles.stretch} source={require('../assets/splash.png')} />
 	</ScreenContainer>
 );
