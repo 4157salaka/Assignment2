@@ -11,7 +11,6 @@ import Login from "./Login";
 import { CreateAccount } from "./CreateAccount";
 import List from "./List";
 import { Home } from "./Home";
-import { Details } from "./Details";
 import Item from "./Item";
 import { Profile } from "./Profile";
 import { Splash } from "./Splash";
@@ -50,13 +49,6 @@ const HomeStackScreen = ({ navigation }) => (
 					style={{ marginLeft: 15 }}
 				/>
             ) }}
-		/>
-		<HomeStack.Screen
-			name="Details"
-			component={Details}
-			options={({ route }) => ({
-				title: route.params.name
-			})}
 		/>
 	</HomeStack.Navigator>
 );
