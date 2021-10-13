@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Image, Text, KeyboardAvoidingView, Alert 
 import { Icon, Input, Button } from 'react-native-elements';
 import axios from 'axios';
 
+import { baseURL } from './baseURL';
 import { AuthContext } from "./context";
 import { Loading } from './Loading';
 
@@ -11,19 +12,48 @@ const ScreenContainer = ({ children }) => (
 );
   
 export const CreateAccount = () => {
-    const { signUp } = React.useContext(AuthContext);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const { signIn, saveDetails } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(true);
     const [enableShift, setEnableShift] = useState(false);
 
     const [name, setName] = useState();
     const [username, setUsername] = useState();
-    const [email, setEmail] = useState();
 	const [newPassword, setPassword] = useState();
 	const [confirmPassword, setConfirmPassword] = useState();
 
-	React.useEffect(() => {
+	const validate = useCallback(() => {
+		if(!username || !newPassword || !confirmPassword || !name) {
+			alert("All the fields are required!");
+		} else if(newPassword !== confirmPassword) {
+            alert("Confirm password does not match!");
+		} else if((newPassword.length < 10) || (confirmPassword.length < 10)) {
+			alert("Password need to be at least 10 digits!");
+		} else if (!/[!@#$%^&*]/.test(newPassword)) {
+			alert("Password must have at least one special character! Eg: !,@,#,$,%,^,&,*");
+		} else {
+			const user = {
+				name: name,
+				username: username,
+				newPassword: newPassword,
+				confirmPassword: confirmPassword
+			};
+			axios.post(`${baseURL}/users/register`, user)
+			.then((res) => {
+				let loggedInUser = res.data;
+				let userJWT = loggedInUser.token;
+				Alert.alert("Welcome","Welcome to ToDoNotes, " + username + "!");
+				signIn(userJWT,username,newPassword);
+				saveDetails(userJWT,username,newPassword);
+			})
+			.catch((err) => {
+				Alert.alert("Error",`Signin failed! ${err.response.data.msg}`);
+			});
+		}
+	},[name, username, newPassword, confirmPassword]);
+
+	useEffect(() => {
 		setTimeout(() => {
-		setIsLoading(false);
+			setIsLoading(false);
 		}, 1500);
 	}, []);
 
@@ -59,16 +89,6 @@ export const CreateAccount = () => {
 							containerStyle={styles.formInput}
 							onFocus={() => {setEnableShift(false)}}
 						/>
-						
-						<Input
-							placeholder="Email"
-							leftIcon={{ type: 'font-awesome', name: 'envelope-o' }}
-							onChangeText={(email) => setEmail(email)}
-							value={email}
-							containerStyle={styles.formInput}
-							onFocus={() => {setEnableShift(true)}}
-						/>
-						
 						<Input
 							placeholder="New Password"
 							leftIcon={{ type: 'font-awesome', name: 'key' }}
@@ -88,14 +108,13 @@ export const CreateAccount = () => {
 							onFocus={() => {setEnableShift(true)}}
 						/>
 						<View style={styles.formButton}>
-							{/* <Button
+							<Button
 								title=" Register"
 								onPress={() => validate()}
 								icon={ <Icon name='user-plus' type='font-awesome' size={24} color= 'white' />}
 								buttonStyle={{ backgroundColor: "#2979FF" }}
-							/> */}
-                            
-                            <Button title="Sign Up" onPress={() => signUp()} />
+							/>
+                            {/* <Button title="Sign Up" onPress={() => signUp()} /> */}
 						</View>
 					</View>
 				</KeyboardAvoidingView>

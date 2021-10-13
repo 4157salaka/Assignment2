@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Icon } from 'react-native-elements';
+import * as SecureStore from 'expo-secure-store';
 
 import { AuthContext } from "./context";
 import { SignIn } from "./SignIn";
@@ -178,31 +179,72 @@ const RootStackScreen = ({ userToken }) => (
 );
 
 export default () => {
-	const [isLoading, setIsLoading] = React.useState(true);
-	const [userToken, setUserToken] = React.useState(null);
+	
+	const [isLoading, setIsLoading] = useState(true);
+	const [username, setUsername] = useState();
+	const [password, setPassword] = useState();
+	const [userJWT, setUserJWT] = useState();
+
+	const loadDetails = async () => {
+		try {
+			let username = await SecureStore.getItemAsync("appUsername");
+			let password = await SecureStore.getItemAsync("appPassword");
+			let userJWT = await SecureStore.getItemAsync("userJWT");
+
+			if (username && password && userJWT) {
+				setUsername(username);
+				setPassword(password);
+				setUserJWT(userJWT);
+			}
+		} catch (err) {
+			alert (err);
+		}
+	}
 
 	// Authentication process
-	const authContext = React.useMemo(() => {
+	const authContext = useMemo(() => {
 		return {
-			signIn: () => {
+			signIn: (userJWT,username,password) => {
 				setIsLoading(false);
-				setUserToken("asdf");
-			},
-			signUp: () => {
-				setIsLoading(false);
-				setUserToken("asdf");
+				setUsername(username);
+				setPassword(password);
+				setUserJWT(userJWT);
 			},
 			signOut: () => {
 				setIsLoading(false);
-				setUserToken(null);
-			}
+				setUsername();
+				setPassword();
+				setUserJWT();
+			},
+			saveDetails: async (userJWT,username,password) => {
+				try {
+					await SecureStore.setItemAsync("appUsername", String(username));
+					await SecureStore.setItemAsync("appPassword", String(password));
+					await SecureStore.setItemAsync("userJWT", String(userJWT));
+				} catch (err) {
+					alert (err);
+				}
+			},
+			removeDetails: async () => {
+				try {
+					await SecureStore.deleteItemAsync("appUsername");
+					await SecureStore.deleteItemAsync("appPassword");
+					await SecureStore.deleteItemAsync("userJWT");
+				} catch (err) {
+					alert (err);
+				}
+			},
+			username,
+			password,
+			userJWT
 		};
-	}, []);
+	}, [username,password,userJWT]);
 
 	// Splash screen
-	React.useEffect(() => {
+	useEffect(() => {
+		loadDetails();
 		setTimeout(() => {
-		setIsLoading(false);
+			setIsLoading(false);
 		}, 1500);
 	}, []);
 
@@ -214,7 +256,7 @@ export default () => {
 	return (
 		<AuthContext.Provider value={authContext}>
 			<NavigationContainer>
-				<RootStackScreen userToken={userToken} />
+				<RootStackScreen username={username} password={password} userJWT={userJWT} />
 			</NavigationContainer>
 		</AuthContext.Provider>
 	);
