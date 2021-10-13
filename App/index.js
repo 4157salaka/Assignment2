@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
 
 import { AuthContext } from "./context";
-import { SignIn } from "./SignIn";
+import Login from "./Login";
 import { CreateAccount } from "./CreateAccount";
 import List from "./List";
 import { Home } from "./Home";
@@ -22,8 +22,8 @@ const AuthStack = createStackNavigator();
 const AuthStackScreen = () => (
 	<AuthStack.Navigator>
 		<AuthStack.Screen
-			name="SignIn"
-			component={SignIn}
+			name="Login"
+			component={Login}
 			options={{ title: "Sign In" }}
 		/>
 		<AuthStack.Screen
@@ -156,9 +156,9 @@ const DrawerScreen = () => (
 
 // Render Authentication & Drawer at the initial app deployment
 const RootStack = createStackNavigator();
-const RootStackScreen = ({ userToken }) => (
+const RootStackScreen = ({ username, password, userJWT }) => (
 	<RootStack.Navigator headerMode="none">
-		{userToken ? (
+		{username && password && userJWT ? (
 		<RootStack.Screen
 			name="App"
 			component={DrawerScreen}
