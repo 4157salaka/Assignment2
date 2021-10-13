@@ -8,10 +8,10 @@ import { Icon } from 'react-native-elements';
 import { AuthContext } from "./context";
 import { SignIn } from "./SignIn";
 import { CreateAccount } from "./CreateAccount";
-import { List } from "./List";
+import List from "./List";
 import { Home } from "./Home";
 import { Details } from "./Details";
-import { Search2 } from "./Search2";
+import Item from "./Item";
 import { Profile } from "./Profile";
 import { Splash } from "./Splash";
 import { CustomDrawerContent } from './CustomDrawerContent';
@@ -77,7 +77,7 @@ const ToDoListScreen = ({ navigation }) => (
 				/>
             ) }}
 		/>
-		<ToDoList.Screen name="Search2" component={Search2} />
+		<ToDoList.Screen name="Item" component={Item} />
 	</ToDoList.Navigator>
 );
 
