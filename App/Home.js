@@ -3,6 +3,8 @@ import { View, StyleSheet, ScrollView, Image, Text, KeyboardAvoidingView, Alert,
 import { Icon, Input, Button } from 'react-native-elements';
 import axios from 'axios';
 
+import { baseURL } from './baseURL';
+import { AuthContext } from "./context";
 import { Loading } from './Loading';
 
 const ScreenContainer = ({ children }) => (
@@ -10,15 +12,50 @@ const ScreenContainer = ({ children }) => (
 );
   
 export const Home = ({ navigation }) => {
-    const [isLoading, setIsLoading] = React.useState(true);
+
+	const { username, password, userJWT } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(true);
     const [enableShift, setEnableShift] = useState(false);
 
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
 
-	React.useEffect(() => {
+	var today = new Date();
+	var dd = String(today.getDate()).padStart(2, '0');
+	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	var yyyy = today.getFullYear();
+	var date = dd + '-' + mm + '-' + yyyy;
+
+	const resetfields = () => {
+		setTitle();
+		setDescription();
+	}
+
+	const validate = useCallback(() => {
+		if(!username || !password || !userJWT || !title || !description || !date) {
+			alert("All the fields are required!");
+		} else {
+			const todo = {
+				username: username,
+				title: title,
+				description: description,
+				date: date
+			};
+			axios.post(`${baseURL}/todos/create`, todo, { headers: { "x-auth-token": userJWT } })
+			.then((res) => {
+				Alert.alert("Todo created!");
+				setTitle();
+				setDescription();
+			})
+			.catch((err) => {
+				Alert.alert("Error",`Todo is not created! ${err.response.data.msg}`);
+			});
+		}
+	},[username, password, userJWT, title, description, date]);
+
+	useEffect(() => {
 		setTimeout(() => {
-		setIsLoading(false);
+			setIsLoading(false);
 		}, 1500);
 	}, []);
 
@@ -28,21 +65,11 @@ export const Home = ({ navigation }) => {
 
     return(
         <ScreenContainer>
-            {/* <Text>Master List Screen</Text>
-            <Button
-                title="React Native by Example"
-                onPress={() => navigation.push("Details", { name: "React Native by Example " })}
-            />
-            <Button
-                title="React Native School"
-                onPress={() => navigation.push("Details", { name: "React Native School" })}
-            /> */}
-
             <ScrollView>
 				<KeyboardAvoidingView behavior="position" enabled={enableShift}>
 					<View style={styles.logoView}>
 						{/* <Image style={styles.stretch} source={require('../../assets/splash.png')} /> */}
-						<Text style={styles.text}>Add To Do Notes</Text>
+						<Text style={styles.text}>Add ToDo Notes</Text>
 					</View>
 					<View style={styles.container}>
 						<Input
@@ -66,13 +93,13 @@ export const Home = ({ navigation }) => {
                         <View style={styles.buttonView}>
                             <Button
                                 title=" Add Todo"
-                                onPress={() => navigation.push("Details", { name: "React Native by Example " })}
+                                onPress={() => validate()}
                                 icon={ <Icon name='plus' type='font-awesome' size={24} color= 'white' />}
                             />
                             <Button
                                 title=" Reset"
                                 color="red"
-                                onPress={() => navigation.push("Details", { name: "React Native School" })}
+                                onPress={() => resetfields()}
                                 icon={ <Icon name='undo' type='font-awesome' size={24} color= 'white' /> }
                                 buttonStyle={{ backgroundColor: "red" }}
                                 style={{marginLeft: 10}}
