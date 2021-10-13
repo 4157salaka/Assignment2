@@ -1,31 +1,22 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Icon } from 'react-native-elements';
 import { Title, Card } from 'react-native-paper';
-
-const ScreenContainer = ({ children }) => (
-    <View style={styles.container}>{children}</View>
-);
-  
+ 
 export default function Item (props) {
 
-    const { userId, id, title, body } = props.route.params.item;
+    const { title, description, date } = props.route.params.item;
 
     return (
         <ScrollView>
             <Card style={styles.titleCard}>
                 <View style={styles.notificationCardContent}>
-                    <Text>ID : {id}</Text>
-                    <View style={{flexDirection:"row"}}>
-                        <Icon name='eye' type='font-awesome' size={24} color= 'grey' />
-                        <Text style={{marginTop:5}}> : {userId}</Text>
-                    </View>
+                    <Text>Date : {date}</Text>
                     <Title>{title}</Title>
                 </View>
             </Card>
             <Card style={styles.detailCard}>
                 <View style={styles.notificationCardContent}>
-                    <Text style={styles.cardTextDetails}>{body}</Text>
+                    <Text style={styles.cardTextDetails}>{description}</Text>
                 </View>
             </Card>
         </ScrollView>

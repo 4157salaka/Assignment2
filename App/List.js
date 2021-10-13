@@ -3,11 +3,9 @@ import { StyleSheet, Text, View, FlatList, ScrollView } from 'react-native';
 import { Card } from 'react-native-paper';
 import axios from 'axios';
 
+import { baseURL } from './baseURL';
+import { AuthContext } from "./context";
 import { Loading } from './Loading';
-
-const ScreenContainer = ({ children }) => (
-    <View style={styles.container}>{children}</View>
-);
 
 const listItem = ((item,navigation) => {
 	return(
@@ -18,7 +16,7 @@ const listItem = ((item,navigation) => {
 			}}
 		>
 			<View style={styles.notificationCardContent}>
-				<Text>ID : {item.id}</Text>
+				<Text>{item.date}</Text>
 				<Text style={styles.cardTextNotifications}>{item.title}</Text>
 			</View>
 		</Card>
@@ -27,17 +25,23 @@ const listItem = ((item,navigation) => {
   
 export default function List ({ navigation }) {
 
-    const [isLoading, setIsLoading] = React.useState(true);
+	const { username, password, userJWT } = useContext(AuthContext);
+
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [list, setList] = useState();
 
     const pullDownRefresh = () => {
+		const user = {
+			username: username,
+			password: password
+		};
 
-		axios.get(`https://jsonplaceholder.typicode.com/posts`)
+		axios.post(`${baseURL}/todos`, user, { headers: { "x-auth-token": userJWT } })
 		.then((response) => {
 			setIsLoading(false);
 			setList(response.data);
-            setError('');
+			setError('');
 		})
 		.catch((err) => {
 			setIsLoading(false);
@@ -63,24 +67,10 @@ export default function List ({ navigation }) {
 	}
 
     return(
-        // <ScreenContainer>
-        //     <Text>List Screen</Text>
-        //     <Button title="Item" onPress={() => navigation.push("Item")} />
-        //     <Button
-        //         title="React Native School"
-        //         onPress={() => {
-        //             navigation.navigate("Home", {
-        //                 screen: "Details",
-        //                 params: { name: "React Native School" }
-        //             });
-        //         }}
-        //     />
-        // </ScreenContainer>
-
         <FlatList
 			data={list}
 			renderItem={({item}) => {return listItem(item,navigation)}}
-			keyExtractor={(item)=>`${item.id}`}
+			keyExtractor={(item)=>`${item._id}`}
 			onRefresh={() => pullDownRefresh()}
 			refreshing={isLoading}
 		/>
