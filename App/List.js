@@ -8,19 +8,37 @@ import { AuthContext } from "./context";
 import { Loading } from './Loading';
 
 const listItem = ((item,navigation) => {
-	return(
-		<Card
-			style={styles.notificationCard}
-			onPress={() => {
-				navigation.push("Item",{item});
-			}}
-		>
-			<View style={styles.notificationCardContent}>
-				<Text>{item.date}</Text>
-				<Text style={styles.cardTextNotifications}>{item.title}</Text>
-			</View>
-		</Card>
-	);
+	let completionState = item.completion;
+
+	if(completionState > 0) {
+		return(
+			<Card
+				style={styles.notificationCard}
+				onPress={() => {
+					navigation.push("Item",{item});
+				}}
+			>
+				<View style={styles.notificationCardContent}>
+					<Text style={{ textDecorationLine: 'line-through' }}>{item.date}</Text>
+					<Text style={styles.cardTextNotifications} style={{ textDecorationLine: 'line-through' }}>{item.title}</Text>
+				</View>
+			</Card>
+		);
+	} else {
+		return(
+			<Card
+				style={styles.notificationCard}
+				onPress={() => {
+					navigation.push("Item",{item});
+				}}
+			>
+				<View style={styles.notificationCardContent}>
+					<Text>{item.date}</Text>
+					<Text style={styles.cardTextNotifications}>{item.title}</Text>
+				</View>
+			</Card>
+		);
+	}
 })
   
 export default function List ({ navigation }) {
